@@ -14,22 +14,31 @@ jobs:
     ToolName: 'MsCrmTools.SecurityRelated'
 
   steps:
-  - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet 4.6.4'
+  - task: UseDotNet@2
+    displayName: 'Use .NET Framework 4.8'
     inputs:
-      versionSpec: 4.6.4
+      packageType: 'runtime'
+      version: '4.8.x'
+      
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 6.x'
+    inputs:
+      versionSpec: '6.x'
       checkLatest: true
 
-  - task: NuGetCommand@2
-    displayName: 'NuGet restore'
+  - task: MSBuild@1
+    displayName: 'Restore NuGet packages'
     inputs:
-      restoreSolution: '${{ parameters.solution }}'
+      solution: '${{ parameters.solution }}'
+      msbuildArguments: '/t:Restore'
+      platform: 'any cpu'
+      configuration: 'release'
 
   - task: VSBuild@1
     displayName: 'Build solution **\*.sln'
     inputs:
       solution: '${{ parameters.solution }}'
-      vsVersion: "15.0"
+      vsVersion: "latest"
       platform: 'any cpu'
       configuration: 'release'
 
