@@ -1,29 +1,34 @@
+parameters:
+- name: solution
+  displayName: Solution
+  type: string
+  default: 'MsCrmTools.SecurityRelated.sln'
+
 jobs:
 - job: 'BuildSolution'
 
   pool:
     vmImage: windows-latest
 
-
   variables:
     ToolName: 'MsCrmTools.SecurityRelated'
 
   steps:
   - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet 4.6.0'
+    displayName: 'Use NuGet 4.6.4'
     inputs:
-      versionSpec: 4.6.0
+      versionSpec: 4.6.4
       checkLatest: true
 
   - task: NuGetCommand@2
     displayName: 'NuGet restore'
     inputs:
-      restoreSolution: '$(Parameters.solution)'
+      restoreSolution: '${{ parameters.solution }}'
 
   - task: VSBuild@1
     displayName: 'Build solution **\*.sln'
     inputs:
-      solution: '$(Parameters.solution)'
+      solution: '${{ parameters.solution }}'
       vsVersion: "15.0"
       platform: 'any cpu'
       configuration: 'release'
