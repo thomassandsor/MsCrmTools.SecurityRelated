@@ -138,6 +138,7 @@
             this.lvUsersAndTeams.TabIndex = 8;
             this.lvUsersAndTeams.UseCompatibleStateImageBehavior = false;
             this.lvUsersAndTeams.View = System.Windows.Forms.View.Details;
+            this.lvUsersAndTeams.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvUsersAndTeams_ColumnClick);
             this.lvUsersAndTeams.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvUsersAndTeams_ItemSelectionChanged);
             // 
             // labelDetailLabel

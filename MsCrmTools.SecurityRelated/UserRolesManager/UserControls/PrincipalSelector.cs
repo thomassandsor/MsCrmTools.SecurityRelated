@@ -148,12 +148,12 @@ namespace MsCrmTools.UserRolesManager.UserControls
             if (e.Column == currentColumnOrder)
             {
                 lvUsersAndTeams.Sorting = lvUsersAndTeams.Sorting == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
-
                 lvUsersAndTeams.ListViewItemSorter = new ListViewItemComparer(e.Column, lvUsersAndTeams.Sorting);
             }
             else
             {
                 currentColumnOrder = e.Column;
+                lvUsersAndTeams.Sorting = SortOrder.Ascending;
                 lvUsersAndTeams.ListViewItemSorter = new ListViewItemComparer(e.Column, SortOrder.Ascending);
             }
         }
