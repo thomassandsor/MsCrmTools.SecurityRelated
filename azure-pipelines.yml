@@ -1,90 +1,36 @@
-parameters:
-- name: solution
-  displayName: Solution
-  type: string
-  default: 'MsCrmTools.SecurityRelated.sln'
+trigger:
+- master
 
-jobs:
-- job: 'BuildSolution'
+pool:
+  vmImage: 'windows-2019'
 
-  pool:
-    vmImage: windows-latest
+variables:
+  solution: 'MsCrmTools.SecurityRelated.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
-  variables:
-    ToolName: 'MsCrmTools.SecurityRelated'
+steps:
+- task: NuGetToolInstaller@1
 
-  steps:
-  - task: UseDotNet@2
-    displayName: 'Use .NET Framework 4.8'
-    inputs:
-      packageType: 'runtime'
-      version: '4.8.x'
-      
-  - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet 6.x'
-    inputs:
-      versionSpec: '6.x'
-      checkLatest: true
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(solution)'
 
-  - task: MSBuild@1
-    displayName: 'Restore NuGet packages'
-    inputs:
-      solution: '${{ parameters.solution }}'
-      msbuildArguments: '/t:Restore'
-      platform: 'any cpu'
-      configuration: 'release'
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '$(solution)'
+    vsVersion: '16.0'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
-  - task: VSBuild@1
-    displayName: 'Build solution **\*.sln'
-    inputs:
-      solution: '${{ parameters.solution }}'
-      vsVersion: "latest"
-      platform: 'any cpu'
-      configuration: 'release'
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)'
+    Contents: '**\bin\$(buildConfiguration)\**'
+    TargetFolder: '$(build.artifactstagingdirectory)'
 
-  - task: "AssembyInfoReader@2"
-    displayName: 'Get Assembly version'
-
-  - task: NuGetCommand@2
-    displayName: 'Create Nuget package'
-    inputs:
-      command: pack
-      packagesToPack: '**/*.nuspec'
-      versioningScheme: byEnvVar
-      versionEnvVar: AssemblyInfo.AssemblyVersion
-
-  - task: AzureKeyVault@1
-    displayName: 'Get Code signin certificate'
-    inputs:
-      azureSubscription: 'Visual Studio Ultimate avec MSDN (c15be07d-a965-4473-8099-eac957b8e27a)'
-      KeyVaultName: XrmToolBoxKeyVault
-      #SecretsFilter: "CodeSigning-TanguyTouzard"
-
-  - powershell: |
-      # Write your PowerShell commands here.
-      $kvSecretBytes = [System.Convert]::FromBase64String("$(CodeSigning-TanguyTouzard)")
-      [System.IO.File]::WriteAllBytes("$(Build.SourcesDirectory)\certificate.pfx", $kvSecretBytes)
-    displayName: 'Store certificate locally'
-
-  - task: NuGetCommand@2
-    displayName: 'Sign Nuget package'
-    inputs:
-      command: custom
-      arguments: 'sign "$(Build.ArtifactStagingDirectory)\$(ToolName).$(AssemblyInfo.AssemblyVersion).nupkg" -CertificatePath "$(Build.SourcesDirectory)\certificate.pfx" -Timestamper "http://timestamp.digicert.com"'
-
-  - powershell: |
-      # Write your PowerShell commands here.
-      Remove-Item "$(Build.SourcesDirectory)\certificate.pfx"
-    displayName: 'Delete local certificate'
-
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-    inputs:
-      SourceFolder: '$(build.sourcesdirectory)'
-      Contents: '**\*$(ToolName)*.nupkg'
-      TargetFolder: '$(build.artifactstagingdirectory)'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    inputs:
-      PathtoPublish: '$(build.artifactstagingdirectory)'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
