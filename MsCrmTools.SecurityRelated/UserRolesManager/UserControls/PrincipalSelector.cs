@@ -40,6 +40,39 @@ namespace MsCrmTools.UserRolesManager.UserControls
             cbbType_SelectedIndexChanged(null, null);
         }
 
+        public void LoadUsersWithRole(Guid roleId)
+        {
+            if (service == null)
+                throw new Exception("IOrganization service is not initialized");
+
+            lvUsersAndTeams.Items.Clear();
+            lblSelection.Text = "Loading users with selected role...";
+
+            var query = new Microsoft.Xrm.Sdk.Query.QueryExpression("systemuser");
+            query.ColumnSet = new Microsoft.Xrm.Sdk.Query.ColumnSet("systemuserid", "firstname", "lastname", "businessunitid");
+            query.Criteria.AddCondition("isdisabled", Microsoft.Xrm.Sdk.Query.ConditionOperator.Equal, false);
+            
+            var roleLink = query.AddLink("systemuserroles", "systemuserid", "systemuserid");
+            roleLink.AddCondition("roleid", Microsoft.Xrm.Sdk.Query.ConditionOperator.Equal, roleId);
+
+            var users = service.RetrieveMultiple(query);
+            
+            lvUsersAndTeams.Items.AddRange(users.Entities.Select(user => new ListViewItem
+            {
+                Text = user.GetAttributeValue<string>("lastname") ?? "",
+                ImageIndex = 0,
+                StateImageIndex = 0,
+                Tag = user,
+                SubItems =
+                {
+                    user.GetAttributeValue<string>("firstname") ?? "",
+                    user.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>("businessunitid")?.Name ?? ""
+                }
+            }).ToArray());
+
+            lblSelection.Text = $"Users found: {users.Entities.Count} out of {users.Entities.Count}";
+        }
+
         private void cbbType_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (service == null)

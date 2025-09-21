@@ -33,12 +33,20 @@ namespace MsCrmTools.UserRolesManager
             principalSelector.Service = Service;
             roleSelector.Service = Service;
 
+            // Wire up the event
+            roleSelector.FindUsersWithRole += RoleSelector_FindUsersWithRole;
+
             principalSelector.LoadViews();
             roleSelector.LoadRoles();
 
             allRoles = roleSelector.AllRoles;
 
             currentUserId = (new SystemUserManager(Service)).GetCurrentUserId();
+        }
+
+        private void RoleSelector_FindUsersWithRole(object sender, Guid roleId)
+        {
+            principalSelector.LoadUsersWithRole(roleId);
         }
 
         private void TsbCloseClick(object sender, EventArgs e)

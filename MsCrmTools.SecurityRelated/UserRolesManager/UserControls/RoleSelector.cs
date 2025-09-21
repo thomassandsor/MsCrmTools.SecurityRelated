@@ -12,6 +12,8 @@ namespace MsCrmTools.UserRolesManager.UserControls
         private int currentColumnOrder;
         private IOrganizationService service;
 
+        public event EventHandler<Guid> FindUsersWithRole;
+
         public RoleSelector()
         {
             InitializeComponent();
@@ -68,6 +70,20 @@ namespace MsCrmTools.UserRolesManager.UserControls
             {
                 currentColumnOrder = e.Column;
                 listView1.ListViewItemSorter = new ListViewItemComparer(e.Column, SortOrder.Ascending);
+            }
+        }
+
+        private void contextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            findUsersWithRoleToolStripMenuItem.Enabled = listView1.SelectedItems.Count == 1;
+        }
+
+        private void findUsersWithRoleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 1)
+            {
+                var selectedRole = (Entity)listView1.SelectedItems[0].Tag;
+                FindUsersWithRole?.Invoke(this, selectedRole.Id);
             }
         }
     }

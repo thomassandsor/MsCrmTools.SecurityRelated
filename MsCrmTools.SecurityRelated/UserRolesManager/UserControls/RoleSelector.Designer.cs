@@ -35,6 +35,8 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.findUsersWithRoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SuspendLayout();
             // 
             // listView1
@@ -43,6 +45,7 @@
             this.columnHeader1,
             this.columnHeader3,
             this.columnHeader2});
+            this.listView1.ContextMenuStrip = this.contextMenuStrip;
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.FullRowSelect = true;
             this.listView1.HideSelection = false;
@@ -78,6 +81,21 @@
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "ManageRoles_16.png");
             // 
+            // contextMenuStrip
+            // 
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findUsersWithRoleToolStripMenuItem});
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(177, 26);
+            this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
+            // 
+            // findUsersWithRoleToolStripMenuItem
+            // 
+            this.findUsersWithRoleToolStripMenuItem.Name = "findUsersWithRoleToolStripMenuItem";
+            this.findUsersWithRoleToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.findUsersWithRoleToolStripMenuItem.Text = "Find users with role";
+            this.findUsersWithRoleToolStripMenuItem.Click += new System.EventHandler(this.findUsersWithRoleToolStripMenuItem_Click);
+            // 
             // RoleSelector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -97,5 +115,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem findUsersWithRoleToolStripMenuItem;
     }
 }
