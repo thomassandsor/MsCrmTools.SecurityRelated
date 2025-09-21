@@ -250,3 +250,9 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Development reference files (local only)
+XRMTOOLBOX_DEV_GUIDE.md
+build.ps1
+deploy.bat
+nuget.exe
